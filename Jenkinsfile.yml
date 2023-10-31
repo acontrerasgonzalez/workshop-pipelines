@@ -41,29 +41,38 @@ spec:
     }
     environment {
         // Definición del entorno...
+        APP_NAME = getPomArtifactId()
+        APP_VERSION = getPomVersionNoQualifier()
+        // ... otras variables de entorno
     }
     stages {
         stage('Prepare environment') {
             steps {
+                echo '-=- prepare environment -=-'
                 // Pasos de preparación del entorno...
             }
         }
         
         stage('Compile') {
             steps {
-                // Pasos para compilar...
+                echo '-=- compiling project -=-'
+                sh './mvnw compile'
             }
         }
         
         stage('Unit tests') {
             steps {
-                // Pasos para ejecutar pruebas unitarias...
+                echo '-=- execute unit tests -=-'
+                sh './mvnw test org.jacoco:jacoco-maven-plugin:report'
+                junit 'target/surefire-reports/*.xml'
+                jacoco execPattern: 'target/jacoco.exec'
             }
         }
         
         stage('Mutation tests') {
             steps {
-                // Pasos para ejecutar pruebas de mutación...
+                echo '-=- execute mutation tests -=-'
+                sh './mvnw org.pitest:pitest-maven:mutationCoverage'
             }
         }
 
