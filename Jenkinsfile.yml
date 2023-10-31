@@ -39,7 +39,6 @@ spec:
 '''
         }
     }
- 
     environment {
         APP_NAME = getPomArtifactId()
         APP_VERSION = getPomVersionNoQualifier()
@@ -65,8 +64,8 @@ spec:
             steps {
                 echo '-=- prepare environment -=-'
                 echo "APP_NAME: ${APP_NAME}\nAPP_VERSION: ${APP_VERSION}"
-                echo "the name for the epheremeral test container to be created is: $EPHTEST_CONTAINER_NAME"
-                echo "the base URL for the epheremeral test container is: $EPHTEST_BASE_URL"
+                echo "the name for the ephemeral test container to be created is: $EPHTEST_CONTAINER_NAME"
+                echo "the base URL for the ephemeral test container is: $EPHTEST_BASE_URL"
                 sh 'java -version'
                 sh './mvnw --version'
                 container('podman') {
@@ -78,44 +77,52 @@ spec:
                         sh 'kubectl version'
                     }
                 }
-            stage('Compile') {
-                steps {
-                    echo '-=- compiling project -=-'
-                    sh './mvnw compile'
-                }
             }
-
-            stage('Unit tests') {
-                steps {
-                    echo '-=- execute unit tests -=-'
-                    sh './mvnw test org.jacoco:jacoco-maven-plugin:report'
-                    junit 'target/surefire-reports/*.xml'
-                    jacoco execPattern: 'target/jacoco.exec'
-                }
+        }
+        
+        stage('Compile') {
+            steps {
+                echo '-=- compiling project -=-'
+                sh './mvnw compile'
             }
-
-            stage('Mutation tests') {
-                steps {
-                    echo '-=- execute mutation tests -=-'
-                    sh './mvnw org.pitest:pitest-maven:mutationCoverage'
-                }
+        }
+        
+        stage('Unit tests') {
+            steps {
+                echo '-=- execute unit tests -=-'
+                sh './mvnw test org.jacoco:jacoco-maven-plugin:report'
+                junit 'target/surefire-reports/*.xml'
+                jacoco execPattern: 'target/jacoco.exec'
             }
+        }
+        
+        stage('Mutation tests') {
+            steps {
+                echo '-=- execute mutation tests -=-'
+                sh './mvnw org.pitest:pitest-maven:mutationCoverage'
+            }
+        }
+        
+        stage('Quality Gates') {
+            steps {
+                echo '-=- running quality gates -=-'
                 script {
                     qualityGates = readYaml file: 'quality-gates.yaml'
+                    // Implement logic to check quality gates and handle success/failure
                 }
             }
         }
     }
 }
- 
+
 def getPomVersion() {
     return readMavenPom().version
 }
- 
+
 def getPomVersionNoQualifier() {
     return readMavenPom().version.split('-')[0]
 }
- 
+
 def getPomArtifactId() {
     return readMavenPom().artifactId
 }
