@@ -46,7 +46,7 @@ spec:
         APP_LISTENING_PORT = '8080'
         APP_JACOCO_PORT = '6300'
         CONTAINER_REGISTRY_URL = 'docker.io'
-        IMAGE_ORG = 'adri257' // change it to your own organization at Docker.io!
+        IMAGE_ORG = 'adrianpg10' // change it to your own organization at Docker.io!
         IMAGE_NAME = "$IMAGE_ORG/$APP_NAME"
         IMAGE_SNAPSHOT = "$IMAGE_NAME:$APP_VERSION-snapshot-$BUILD_NUMBER" // tag for snapshot version
         IMAGE_SNAPSHOT_LATEST = "$IMAGE_NAME:latest-snapshot" // tag for latest snapshot version
@@ -55,7 +55,7 @@ spec:
         EPHTEST_CONTAINER_NAME = "ephtest-$APP_NAME-snapshot-$BUILD_NUMBER"
         EPHTEST_BASE_URL = "http://$EPHTEST_CONTAINER_NAME:$APP_LISTENING_PORT".concat("/$APP_CONTEXT_ROOT".replace('//', '/'))
         // credentials
-        KUBERNETES_CLUSTER_CRED_ID = 'k3s'
+        KUBERNETES_CLUSTER_CRED_ID = 'k3s-lima-vm-kubeconfig'
         CONTAINER_REGISTRY_CRED = credentials("docker-hub-$IMAGE_ORG")
     }
     stages {
@@ -177,6 +177,18 @@ spec:
             }
         }
         
+    }
+    post {
+        always {
+            echo '-=- stop test container and remove deployment -=-'
+            container('kubectl') {
+                withKubeConfig([credentialsId: "$KUBERNETES_CLUSTER_CRED_ID"]) {
+                    sh "kubectl delete pod $EPHTEST_CONTAINER_NAME"
+                    sh "kubectl delete service $EPHTEST_CONTAINER_NAME"
+                    sh "kubectl delete service $EPHTEST_CONTAINER_NAME-jacoco"
+                }
+            }
+        }
     }
 }
  
