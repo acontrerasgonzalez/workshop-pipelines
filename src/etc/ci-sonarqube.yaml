@@ -115,7 +115,7 @@ spec:
             - name: POSTGRES_PASSWORD
               value: "sonar99sonar"
           securityContext:
-            runAsUser: 0
+            runAsUser: 501
           volumeMounts:
             - name: ci-sonarqube-data
               mountPath: /var/lib/postgresql/data
