@@ -19,7 +19,6 @@ quality_gate:
     # Estableciendo un umbral para el porcentaje de pruebas unitarias pasadas
     # Si el porcentaje de pruebas unitarias pasadas es menor que este umbral, el gate falla
     pass_percentage: 90
-    [10:45] Lorenzo Gomis, F.
 performance:
 
   throughput:
