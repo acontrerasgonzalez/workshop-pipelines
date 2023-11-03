@@ -19,3 +19,67 @@ quality_gate:
     # Estableciendo un umbral para el porcentaje de pruebas unitarias pasadas
     # Si el porcentaje de pruebas unitarias pasadas es menor que este umbral, el gate falla
     pass_percentage: 90
+    [10:45] Lorenzo Gomis, F.
+performance:
+
+  throughput:
+
+    error:
+
+      unstable: 0
+
+      failed: 5
+
+    response:
+
+      unstable: 'default.jtl:100'
+ 
+security:
+
+  static:
+
+    high:
+
+      unstable: 0
+
+      failed: 0
+
+    medium:
+
+      unstable: 0
+
+      failed: 5
+
+  dynamic:
+
+    high:
+
+      unstable: 0
+
+      failed: 0
+
+    medium:
+
+      unstable: 0
+
+      failed: 5
+
+  dependencies:
+
+    critical:
+
+      unstable: 10
+
+      failed: 10
+
+    high:
+
+      unstable: 10
+
+      failed: 10
+
+    medium:
+
+      unstable: 15
+
+      failed: 15
